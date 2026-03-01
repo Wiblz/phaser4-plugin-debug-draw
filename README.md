@@ -1,153 +1,140 @@
-![Preview](./preview.png)
+# phaser4-plugin-debug-draw
 
-Phaser 3 Debug Draw Plugin
-==========================
+> TypeScript debug draw plugin for Phaser 3.53+ and Phaser 4
 
-See [demos](https://codepen.io/collection/GomapQ), [screenshots](https://phaser.discourse.group/t/debug-draw-plugin-phaser-3/4480).
+Modern fork of [phaser-plugin-debug-draw](https://github.com/samme/phaser-plugin-debug-draw) with full TypeScript support, modern tooling, and compatibility with both Phaser 3 and Phaser 4.
 
-It shows:
+## Features
 
-- Game Objects with origin, bounds, rotation, input
-- Bitmap Masks
-- Input pointers
+- ✅ **Dual Phaser Support** - Works with Phaser 3.53.0+ and Phaser 4.0.0+
+- ✅ **Full TypeScript** - Complete type safety with proper type definitions
+- ✅ **Tiny Bundle** - ~9KB minified
+
+### What it displays
+
+- Game object position, origin, bounds, and rotation
+- Interactive objects (input-enabled/disabled)
+- Bitmap masks
+- Input pointers (mouse/touch)
 - Camera bounds, deadzone, and follow target
-- Lights
+- Lights (Light2D system)
+- Layers (recursively processes children)
 
-It doesn't show:
+## Installation
 
-- Game Objects in Containers
-- Blitter Bobs
-- Particle Emitters
-
-Install
--------
-
-The current version of the plugin requires Phaser v3.53.0 or later. It should work with Phaser v3.80.0-beta.2 as well, but if you're installing the plugin with npm you'll need to use `--force`.
-
-### Browser / UMD
-
-Download and add the [plugin UMD script](dist/phaser-plugin-debug-draw.umd.js):
-
-```html
-<script src='path/to/phaser.js'></script>
-<script src='path/to/phaser-plugin-debug-draw.umd.js'></script>
+```bash
+npm install phaser4-plugin-debug-draw
 ```
 
-Or use the CDN scripts:
+## Usage
 
-```html
-<script src='https://cdn.jsdelivr.net/npm/phaser@3.70.0'></script>
-<script src='https://cdn.jsdelivr.net/npm/phaser-plugin-debug-draw@7.1.0'></script>
-```
+### Register the plugin
 
-Then add to your game config:
+```typescript
+import Phaser from 'phaser';
+import DebugDrawPlugin from 'phaser4-plugin-debug-draw';
 
-```js
-/* global PhaserDebugDrawPlugin */
-
-new Phaser.Game({
+const config = {
+  // ... your game config
   plugins: {
     scene: [
-      { key: 'DebugDrawPlugin', plugin: PhaserDebugDrawPlugin, mapping: 'debugDraw' }
+      {
+        key: 'DebugDrawPlugin',
+        plugin: DebugDrawPlugin,
+        mapping: 'debugDraw'
+      }
     ]
   }
-});
+};
+
+const game = new Phaser.Game(config);
 ```
 
-Or if you would rather activate the plugin per scene:
+### Use in your scene
 
-```js
-/* global PhaserDebugDrawPlugin */
+```typescript
+class MyScene extends Phaser.Scene {
+  create() {
+    // The plugin is automatically available as this.debugDraw
 
-new Phaser.Game({
-  plugins: {
-    scene: [{ key: 'DebugDrawPlugin', plugin: PhaserDebugDrawPlugin }]
-  },
-  scene: [
-    new Phaser.Scene({
-      key: 'debugDrawScene',
-      plugins: [
-        ...Phaser.Plugins.DefaultPlugins.DefaultScene,
-        'DebugDrawPlugin'
-      ]
-    }),
-    new Phaser.Scene({
-      key: 'noDebugDrawScene'
-    })
-  ]
-});
-```
+    // Customize colors (optional)
+    this.debugDraw.color = 0x00ff00;
+    this.debugDraw.inputColor = 0xff0000;
 
-### Module
-
-```js
-import DebugDrawPlugin from 'phaser-plugin-debug-draw';
-
-new Phaser.Game({
-  plugins: {
-    scene: [
-      { key: 'DebugDrawPlugin', plugin: DebugDrawPlugin, mapping: 'debugDraw' }
-    ]
+    // Toggle visibility
+    this.debugDraw.toggle();
   }
-});
-```
-
-### Quick Load
-
-Add to your first scene:
-
-```js
-function preload () {
-  this.load.scenePlugin(
-    'PhaserDebugDrawPlugin',
-    'https://cdn.jsdelivr.net/npm/phaser-plugin-debug-draw@7.1.0',
-    'debugDraw',
-    'debugDraw'
-  );
 }
 ```
 
-### Load from Console
+## Configuration
 
-Given a global variable `game`:
+All properties are optional and can be set at runtime:
 
-```js
-game.scene
-  .getScenes(true)[0]
-  .load
-  .scenePlugin(
-    'PhaserDebugDrawPlugin',
-    'https://cdn.jsdelivr.net/npm/phaser-plugin-debug-draw@7.1.0',
-    'debugDraw',
-    'debugDraw'
-  )
-  .start();
+```typescript
+interface DebugDrawConfig {
+  alpha?: number;                    // Default: 1
+  cameraBoundsColor?: number;        // Default: 0xff00c3 (fuchsia)
+  cameraDeadzoneColor?: number;      // Default: 0xeb7700 (orange)
+  cameraFollowColor?: number;        // Default: 0xeb7700 (orange)
+  color?: number;                    // Default: 0x00d9f7 (aqua)
+  inputColor?: number;               // Default: 0xebcf00 (yellow)
+  inputDisabledColor?: number;       // Default: 0x777777 (silver)
+  lightColor?: number;               // Default: 0x8d00ff (purple)
+  lineWidth?: number;                // Default: 1
+  maskColor?: number;                // Default: 0xeb0012 (red)
+  pointerColor?: number;             // Default: 0xebcf00 (yellow)
+  pointerDownColor?: number;         // Default: 0x00d942 (green)
+  pointerInactiveColor?: number;     // Default: 0x777777 (silver)
+  showInactivePointers?: boolean;    // Default: false
+  showInput?: boolean;               // Default: true
+  showLights?: boolean;              // Default: true
+  showPointers?: boolean;            // Default: true
+  showRotation?: boolean;            // Default: true
+}
 ```
 
-Options
--------
+## API
 
-Set properties on the plugin instance, e.g.,
+### Methods
 
-```js
-// In scene `init()` or `create()`:
-this.debugDraw.showPointers = false;
+- `toggle()` - Show/hide the debug graphics
+
+## Known Limitations
+
+- Does NOT show Game Objects in Containers
+- Does NOT show Blitter Bobs
+- Does NOT show Particle Emitters
+
+## Differences from Original
+
+This fork includes:
+
+- **TypeScript** - Full type safety with `.d.ts` files
+- **Phaser 4 support** - Tested with both v3 and v4
+- **Smaller bundle** - ~15% smaller than original
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Build
+npm run build
+
+# Type check
+npm run typecheck
+
+# Lint & format
+npm run lint
+npm run format
 ```
 
-See `console.log(this.debugDraw)` for all the options.
+## Credits
 
-Position & Bounds
------------------
+Original plugin by [samme](https://github.com/samme/phaser-plugin-debug-draw)
 
-It draws a dot on the Game Object's `x`, `y`.
+## License
 
-If the Game Object has an origin, it also draws a rectangle from the origin with dimensions (`displayWidth`, `displayWidth`) or (`height`, `width`).
-
-Mesh & Rope
------------
-
-```js
-// In scene `create()`:
-mesh.setDebug(this.debugDraw.graphic);
-rope.setDebug(this.debugDraw.graphic);
-```
+ISC

@@ -1,7 +1,7 @@
 {
-  "name": "phaser-plugin-debug-draw",
-  "version": "8.0.0",
-  "description": "Simple debug display for Phaser 3 and Phaser 4",
+  "name": "phaser4-plugin-debug-draw",
+  "version": "1.0.0",
+  "description": "TypeScript debug draw plugin for Phaser 3.53+ and Phaser 4",
   "main": "dist/main.js",
   "module": "dist/main.mjs",
   "types": "dist/main.d.ts",
@@ -20,6 +20,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "preversion": "npm run build && git add dist",
+    "prepublishOnly": "npm run typecheck && npm run lint && npm run build",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
@@ -27,21 +28,26 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/samme/phaser-plugin-debug-draw.git"
+    "url": "git+https://github.com/Wiblz/phaser4-plugin-debug-draw.git"
   },
   "keywords": [
+    "phaser",
+    "phaser3",
+    "phaser4",
     "phaser-plugin",
     "phaser3-plugin",
     "phaser4-plugin",
     "debug",
-    "debug-draw"
+    "debug-draw",
+    "typescript",
+    "gamedev"
   ],
-  "author": "samme",
+  "author": "Wiblz",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/samme/phaser-plugin-debug-draw/issues"
+    "url": "https://github.com/Wiblz/phaser4-plugin-debug-draw/issues"
   },
-  "homepage": "https://github.com/samme/phaser-plugin-debug-draw#readme",
+  "homepage": "https://github.com/Wiblz/phaser4-plugin-debug-draw#readme",
   "devDependencies": {
     "@biomejs/biome": "^2.4.4",
     "phaser": "^3.90.0",
