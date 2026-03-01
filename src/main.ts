@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
 import colors from './colors';
 import type {
-  PhaserSystems,
+  DrawableGameObject,
+  InputGameObject,
   PhaserCamera,
   PhaserLight,
-  InputGameObject,
-  DrawableGameObject,
+  PhaserSystems,
 } from './types';
 
 const { cos, max, sin } = Math;
@@ -78,7 +78,6 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
   sceneShutdown(): void {
     if (this.graphic) {
       this.graphic.destroy();
-      this.graphic = null!;
     }
   }
 
@@ -101,7 +100,15 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
 
     this.graphic.clear();
 
-    displayList.each(this.processObj, this, disabledInputObjs, inputObjs, maskObjs, otherObjs, showInput);
+    displayList.each(
+      this.processObj,
+      this,
+      disabledInputObjs,
+      inputObjs,
+      maskObjs,
+      otherObjs,
+      showInput
+    );
 
     if (otherObjs.length) {
       this.drawOthers(otherObjs);
@@ -177,9 +184,6 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
       .off(PRE_RENDER, this.scenePreRender, this)
       .off(SHUTDOWN, this.sceneShutdown, this)
       .off(DESTROY, this.sceneDestroy, this);
-
-    this.scene = null!;
-    this.systems = null!;
   }
 
   drawOthers(objs: Phaser.GameObjects.GameObject[]): void {
@@ -225,7 +229,12 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
 
         if (drawable.rotation && this.showRotation) {
           const rad = 0.5 * max(width, height);
-          this.line(drawable.x, drawable.y, cos(drawable.rotation) * rad, sin(drawable.rotation) * rad);
+          this.line(
+            drawable.x,
+            drawable.y,
+            cos(drawable.rotation) * rad,
+            sin(drawable.rotation) * rad
+          );
         }
       }
     }
@@ -321,7 +330,7 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
       input.pointer6,
       input.pointer7,
       input.pointer8,
-      input.pointer9
+      input.pointer9,
     ].filter(Boolean) as Phaser.Input.Pointer[];
   }
 
@@ -338,7 +347,11 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
     this.graphic.lineBetween(x, y, x + dx, y + dy);
   }
 
-  lineDelta(start: { x: number; y: number }, delta: { x: number; y: number }, scale: number = 1): void {
+  lineDelta(
+    start: { x: number; y: number },
+    delta: { x: number; y: number },
+    scale: number = 1
+  ): void {
     this.line(start.x, start.y, scale * delta.x, scale * delta.y);
   }
 

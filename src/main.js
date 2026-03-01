@@ -7,9 +7,11 @@ const { Each } = Phaser.Utils.Array;
 const POINTER_RADIUS = 20;
 
 class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
-  boot () {
+  boot() {
     if (Phaser.VERSION.split('.')[1] < 53) {
-      throw new Error('Phaser v3.53.0 or greater is required. Or use <https://github.com/samme/phaser-plugin-debug-draw/releases/tag/v6.0.1>');
+      throw new Error(
+        'Phaser v3.53.0 or greater is required. Or use <https://github.com/samme/phaser-plugin-debug-draw/releases/tag/v6.0.1>'
+      );
     }
 
     this.systems.events
@@ -23,20 +25,20 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
     }
   }
 
-  sceneStart () {
+  sceneStart() {
     this.graphic = this.scene.add.graphics().setDepth(Number.MAX_VALUE);
   }
 
-  sceneShutdown () {
+  sceneShutdown() {
     this.graphic.destroy();
     this.graphic = null;
   }
 
-  scenePreRender () {
+  scenePreRender() {
     this.drawAll();
   }
 
-  drawAll () {
+  drawAll() {
     const { cameras, displayList, lights } = this.systems;
 
     if (!displayList.length) return;
@@ -49,7 +51,15 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
 
     this.graphic.clear();
 
-    displayList.each(this.processObj, this, disabledInputObjs, inputObjs, maskObjs, otherObjs, showInput);
+    displayList.each(
+      this.processObj,
+      this,
+      disabledInputObjs,
+      inputObjs,
+      maskObjs,
+      otherObjs,
+      showInput
+    );
 
     if (otherObjs.length) {
       this.drawOthers(otherObjs);
@@ -81,7 +91,7 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
     this.setColor(this.color);
   }
 
-  processObj (obj, disabledInputObjs, inputObjs, maskObjs, otherObjs, showInput) {
+  processObj(obj, disabledInputObjs, inputObjs, maskObjs, otherObjs, showInput) {
     if (obj.input && showInput) {
       if (obj.input.enabled) {
         inputObjs[inputObjs.length] = obj;
@@ -89,7 +99,16 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
         disabledInputObjs[disabledInputObjs.length] = obj;
       }
     } else if (obj.type === 'Layer') {
-      Each(obj.list, this.processObj, this, disabledInputObjs, inputObjs, maskObjs, otherObjs, showInput);
+      Each(
+        obj.list,
+        this.processObj,
+        this,
+        disabledInputObjs,
+        inputObjs,
+        maskObjs,
+        otherObjs,
+        showInput
+      );
     } else {
       otherObjs[otherObjs.length] = obj;
     }
@@ -101,7 +120,7 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
     }
   }
 
-  sceneDestroy () {
+  sceneDestroy() {
     this.systems.events
       .off(START, this.sceneStart, this)
       .off(PRE_RENDER, this.scenePreRender, this)
@@ -112,31 +131,31 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
     this.systems = null;
   }
 
-  drawOthers (objs) {
+  drawOthers(objs) {
     this.setColor(this.color);
 
     objs.forEach(this.drawObj, this);
   }
 
-  drawDisabledInputs (objs) {
+  drawDisabledInputs(objs) {
     this.setColor(this.inputDisabledColor);
 
     objs.forEach(this.drawObjInput, this);
   }
 
-  drawInputs (objs) {
+  drawInputs(objs) {
     this.setColor(this.inputColor);
 
     objs.forEach(this.drawObjInput, this);
   }
 
-  drawMasks (objs) {
+  drawMasks(objs) {
     this.setColor(this.maskColor);
 
     objs.forEach(this.drawObj, this);
   }
 
-  drawObj (obj) {
+  drawObj(obj) {
     this.dot(obj.x, obj.y);
 
     if ('originX' in obj) {
@@ -148,7 +167,12 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
       }
 
       if (width || height) {
-        this.graphic.strokeRect(obj.x - obj.originX * width, obj.y - obj.originY * height, width, height);
+        this.graphic.strokeRect(
+          obj.x - obj.originX * width,
+          obj.y - obj.originY * height,
+          width,
+          height
+        );
 
         if (obj.rotation && this.showRotation) {
           const rad = 0.5 * max(width, height);
@@ -159,15 +183,15 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
     }
   }
 
-  drawObjInput (obj) {
+  drawObjInput(obj) {
     this.drawObj(obj);
   }
 
-  drawPointers (pointers) {
+  drawPointers(pointers) {
     pointers.forEach(this.drawPointer, this);
   }
 
-  drawPointer (pointer) {
+  drawPointer(pointer) {
     if (!pointer.active && !this.showInactivePointers) return;
 
     const { x, y, zoom } = this.systems.cameras.main;
@@ -177,18 +201,28 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
     this.setColor(this.getColorForPointer(pointer));
 
     if (pointer.locked) {
-      this.graphic.strokeRect(worldX - POINTER_RADIUS, worldY - POINTER_RADIUS, 2 * POINTER_RADIUS, 2 * POINTER_RADIUS);
+      this.graphic.strokeRect(
+        worldX - POINTER_RADIUS,
+        worldY - POINTER_RADIUS,
+        2 * POINTER_RADIUS,
+        2 * POINTER_RADIUS
+      );
       this.line(worldX, worldY, pointer.movementX, pointer.movementY);
     } else {
       this.graphic.strokeCircle(worldX, worldY, POINTER_RADIUS);
     }
 
     if (pointer.isDown) {
-      this.line(worldX, worldY, (pointer.downX - pointer.x) / zoom, (pointer.downY - pointer.y) / zoom);
+      this.line(
+        worldX,
+        worldY,
+        (pointer.downX - pointer.x) / zoom,
+        (pointer.downY - pointer.y) / zoom
+      );
     }
   }
 
-  drawCamera (camera) {
+  drawCamera(camera) {
     if (camera.useBounds) {
       this.setColor(this.cameraBoundsColor);
       this.graphic.strokeRectShape(camera._bounds);
@@ -210,24 +244,24 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
     }
   }
 
-  drawLights (lights) {
+  drawLights(lights) {
     this.setColor(this.lightColor);
 
     lights.forEach(this.drawLight, this);
   }
 
-  drawLight (light) {
+  drawLight(light) {
     this.graphic.strokeCircleShape(light);
   }
 
-  getColorForPointer (pointer) {
+  getColorForPointer(pointer) {
     if (pointer.isDown) return this.pointerDownColor;
     if (!pointer.active) return this.pointerInactiveColor;
 
     return this.pointerColor;
   }
 
-  getPointers () {
+  getPointers() {
     const { input } = this.systems;
 
     return [
@@ -240,32 +274,32 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
       input.pointer6,
       input.pointer7,
       input.pointer8,
-      input.pointer9
+      input.pointer9,
     ].filter(Boolean);
   }
 
-  toggle () {
+  toggle() {
     this.graphic.setVisible(!this.graphic.visible);
   }
 
-  setColor (color) {
+  setColor(color) {
     this.graphic.fillStyle(color, this.alpha).lineStyle(this.lineWidth, color, this.alpha);
   }
 
-  line (x, y, dx, dy) {
+  line(x, y, dx, dy) {
     if (!dx && !dy) return;
     this.graphic.lineBetween(x, y, x + dx, y + dy);
   }
 
-  lineDelta (start, delta, scale = 1) {
+  lineDelta(start, delta, scale = 1) {
     this.line(start.x, start.y, scale * delta.x, scale * delta.y);
   }
 
-  dot (x, y) {
+  dot(x, y) {
     this.graphic.fillPoint(x, y, 3 * this.lineWidth);
   }
 
-  dotPoint (p) {
+  dotPoint(p) {
     this.dot(p.x, p.y);
   }
 }
@@ -288,7 +322,7 @@ Object.assign(DebugDrawPlugin.prototype, {
   showInput: true,
   showLights: true,
   showPointers: true,
-  showRotation: true
+  showRotation: true,
 });
 
 export default DebugDrawPlugin;

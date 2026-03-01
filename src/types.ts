@@ -3,7 +3,7 @@
  * These are runtime properties added by Phaser plugins.
  */
 
-import Phaser from 'phaser';
+import type Phaser from 'phaser';
 
 /**
  * Systems with plugin-injected properties (input, lights)
@@ -37,9 +37,12 @@ export interface PhaserLight {
  * GameObject with optional input component
  */
 export interface InputGameObject {
-  input?: {
-    enabled: boolean;
-  } | Phaser.Types.Input.InteractiveObject | null;
+  input?:
+    | {
+        enabled: boolean;
+      }
+    | Phaser.Types.Input.InteractiveObject
+    | null;
   type: string;
   list?: Phaser.GameObjects.GameObject[];
   mask?: {

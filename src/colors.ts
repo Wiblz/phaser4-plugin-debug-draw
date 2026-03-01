@@ -15,7 +15,7 @@ const colors = {
   silver: 0x777777,
   teal: 0x00a6a6,
   white: 0xffffff,
-  yellow: 0xebcf00
+  yellow: 0xebcf00,
 } as const;
 
 export type DebugColors = typeof colors;

@@ -8,24 +8,25 @@ var RED = 0xff0000;
 var Geom = Phaser.Geom;
 var IncX = Phaser.Actions.IncX;
 var WrapInRectangle = Phaser.Actions.WrapInRectangle;
-var images = ['blue-planet', 'elephant', 'mask', 'nebula', 'starfield']
-  .map(function (name) { return { key: name }; });
+var images = ['blue-planet', 'elephant', 'mask', 'nebula', 'starfield'].map((name) => ({
+  key: name,
+}));
 var sprites, maskImage, nebula, starfield, planet, controls, bounds;
 
-function dragStart (pointer, gameObject) {
+function dragStart(pointer, gameObject) {
   gameObject.setTint(GREEN, GREEN, RED, RED);
 }
 
-function drag (pointer, gameObject, dragX, dragY) {
+function drag(pointer, gameObject, dragX, dragY) {
   gameObject.setPosition(dragX, dragY);
 }
 
-function dragEnd (pointer, gameObject) {
+function dragEnd(pointer, gameObject) {
   gameObject.clearTint();
 }
 
-function snapshot () {
-  this.game.renderer.snapshot(function (image) {
+function snapshot() {
+  this.game.renderer.snapshot((image) => {
     image.style.width = '200px';
     image.style.height = '150px';
 
@@ -34,7 +35,6 @@ function snapshot () {
 }
 
 var scene = {
-
   preload: function () {
     this.load.image(images);
   },
@@ -47,8 +47,14 @@ var scene = {
     this.lights.addLight(128, 128, 256, RED, 2);
 
     bounds = Geom.Rectangle.Clone(this.sys.game.config);
-    starfield = this.add.tileSprite(512, 384, 1024, 1024, 'starfield').setBlendMode(1).setPipeline('Light2D');
-    nebula = this.add.tileSprite(512, 384, 1024, 1024, 'nebula').setBlendMode(1).setPipeline('Light2D');
+    starfield = this.add
+      .tileSprite(512, 384, 1024, 1024, 'starfield')
+      .setBlendMode(1)
+      .setPipeline('Light2D');
+    nebula = this.add
+      .tileSprite(512, 384, 1024, 1024, 'nebula')
+      .setBlendMode(1)
+      .setPipeline('Light2D');
     planet = this.add.image(512, 384, 'blue-planet');
     maskImage = this.make.image({ key: 'mask', add: false });
 
@@ -61,26 +67,18 @@ var scene = {
       frameQuantity: 5,
       setXY: { x: 128, y: 64, stepX: 128, stepY: 128 },
       hitArea: new Geom.Rectangle(-16, 16, 128, 64),
-      hitAreaCallback: Geom.Rectangle.Contains
+      hitAreaCallback: Geom.Rectangle.Contains,
     });
 
     sprites = group.getChildren();
 
-    sprites[0]
-      .setName('inertElephant')
-      .disableInteractive();
+    sprites[0].setName('inertElephant').disableInteractive();
 
-    sprites[1]
-      .setName('invisibleElephant')
-      .setVisible(false);
+    sprites[1].setName('invisibleElephant').setVisible(false);
 
-    sprites[2]
-      .setName('maskedElephant')
-      .setMask(mask);
+    sprites[2].setName('maskedElephant').setMask(mask);
 
-    sprites[3]
-      .setName('infinitesimalElephant')
-      .setScale(0);
+    sprites[3].setName('infinitesimalElephant').setScale(0);
 
     var layer = this.add.layer();
 
@@ -100,12 +98,13 @@ var scene = {
       duration: 2000,
       ease: 'Sine.easeInOut',
       loop: -1,
-      yoyo: true
+      yoyo: true,
     });
 
-    var mesh = this.add.mesh(512, 192, 'elephant')
+    var mesh = this.add
+      .mesh(512, 192, 'elephant')
       .setName('meshElephant')
-      .addVertices([ -1, 1, 1, 1, -1, -1, 1, -1 ], [ 0, 0, 1, 0, 0, 1, 1, 1 ], [ 0, 2, 1, 2, 3, 1 ])
+      .addVertices([-1, 1, 1, 1, -1, -1, 1, -1], [0, 0, 1, 0, 0, 1, 1, 1], [0, 2, 1, 2, 3, 1])
       .panZ(40);
 
     mesh.setDebug(this.debugDraw.graphic);
@@ -114,17 +113,16 @@ var scene = {
       targets: mesh.modelRotation,
       props: {
         x: { value: '-0.5', delay: 0, duration: 1000 },
-        y: { value: '-0.5', delay: 500, duration: 750 }
+        y: { value: '-0.5', delay: 500, duration: 750 },
       },
       ease: 'Sine.easeInOut',
       repeat: -1,
-      yoyo: true
+      yoyo: true,
     });
 
     sprites.push(mesh);
 
-    var rope = this.add.rope(768, 192, 'elephant', null, 10)
-      .setName('elephantRope');
+    var rope = this.add.rope(768, 192, 'elephant', null, 10).setName('elephantRope');
 
     rope.setDebug(this.debugDraw.graphic);
 
@@ -136,7 +134,9 @@ var scene = {
       props: { y: 16 },
       repeat: -1,
       yoyo: true,
-      onUpdate: function (tween, target) { rope.setDirty(); }
+      onUpdate: (tween, target) => {
+        rope.setDirty();
+      },
     });
 
     sprites.push(rope);
@@ -146,13 +146,55 @@ var scene = {
     this.add.star(128, 32, 5, 8, 16, 0xffffff, 0.5);
 
     this.input.keyboard
-      .on('keyup-T', function () { this.debugDraw.toggle(); }, this)
-      .on('keyup-R', function () { this.scene.restart(); }, this)
-      .on('keyup-U', function () { this.scene.remove(); }, this)
-      .on('keyup-C', function () { this.cameras.main.setScroll(0, 0).setZoom(1); }, this)
-      .on('keyup-I', function () { this.debugDraw.showInput = !this.debugDraw.showInput; }, this)
-      .on('keyup-P', function () { this.debugDraw.showPointers = !this.debugDraw.showPointers; }, this)
-      .on('keyup-O', function () { this.debugDraw.showRotation = !this.debugDraw.showRotation; }, this)
+      .on(
+        'keyup-T',
+        function () {
+          this.debugDraw.toggle();
+        },
+        this
+      )
+      .on(
+        'keyup-R',
+        function () {
+          this.scene.restart();
+        },
+        this
+      )
+      .on(
+        'keyup-U',
+        function () {
+          this.scene.remove();
+        },
+        this
+      )
+      .on(
+        'keyup-C',
+        function () {
+          this.cameras.main.setScroll(0, 0).setZoom(1);
+        },
+        this
+      )
+      .on(
+        'keyup-I',
+        function () {
+          this.debugDraw.showInput = !this.debugDraw.showInput;
+        },
+        this
+      )
+      .on(
+        'keyup-P',
+        function () {
+          this.debugDraw.showPointers = !this.debugDraw.showPointers;
+        },
+        this
+      )
+      .on(
+        'keyup-O',
+        function () {
+          this.debugDraw.showRotation = !this.debugDraw.showRotation;
+        },
+        this
+      )
       .once('keyup-S', snapshot, this);
 
     var cursors = this.input.keyboard.createCursorKeys();
@@ -165,7 +207,7 @@ var scene = {
       down: cursors.down,
       zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
       zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
-      speed: 0.2
+      speed: 0.2,
     });
 
     console.log('this.debugDraw', this.debugDraw);
@@ -183,15 +225,14 @@ var scene = {
     WrapInRectangle(sprites, bounds, 50);
 
     controls.update(delta);
-  }
-
+  },
 };
 
 window.game = new Phaser.Game({
   scene: scene,
   plugins: {
-    scene: [{ key: 'DebugDrawPlugin', plugin: PhaserDebugDrawPlugin, mapping: 'debugDraw' }]
+    scene: [{ key: 'DebugDrawPlugin', plugin: PhaserDebugDrawPlugin, mapping: 'debugDraw' }],
   },
   loader: { path: 'assets/' },
-  audio: { noAudio: true }
+  audio: { noAudio: true },
 });
