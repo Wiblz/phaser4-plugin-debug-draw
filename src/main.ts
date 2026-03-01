@@ -54,7 +54,7 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
   showPointers: boolean = true;
   showRotation: boolean = true;
 
-  private graphic!: Phaser.GameObjects.Graphics;
+  graphic!: Phaser.GameObjects.Graphics;
 
   boot(): void {
     const systems = this.systems as PhaserSystems;
@@ -132,7 +132,7 @@ class DebugDrawPlugin extends Phaser.Plugins.ScenePlugin {
 
     this.drawCamera(cameras.main);
 
-    if (lights && lights.active && this.showLights) {
+    if (lights?.active && this.showLights) {
       this.drawLights(lights.lights);
     }
 
